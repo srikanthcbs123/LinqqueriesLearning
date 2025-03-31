@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqqueriesLearning", "LinqqueriesLearning\LinqqueriesLearning.csproj", "{8C4B8C80-96FC-4B03-8499-EB6B8591B26F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C4B8C80-96FC-4B03-8499-EB6B8591B26F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C4B8C80-96FC-4B03-8499-EB6B8591B26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C4B8C80-96FC-4B03-8499-EB6B8591B26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C4B8C80-96FC-4B03-8499-EB6B8591B26F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67DFEFFF-22C9-470D-86F2-CE75F0B20004}
+	EndGlobalSection
+EndGlobal
