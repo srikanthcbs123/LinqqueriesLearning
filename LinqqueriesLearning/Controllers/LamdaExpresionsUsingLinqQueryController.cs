@@ -1,7 +1,9 @@
-﻿using LinqqueriesLearning.Northwind_Connect;
+﻿using LinqqueriesLearning.Models;
+using LinqqueriesLearning.Northwind_Connect;
 using LinqqueriesLearning.Northwind_DB_DBConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace LinqqueriesLearning.Controllers
@@ -32,7 +34,7 @@ namespace LinqqueriesLearning.Controllers
             //now a days in realtime we are using this lamda expressions with linq.
 
             //Normal LinqQuery:  var result = from abc in _northwind_DBContext.Employees select abc;
-            var result2= from abc in _northwind_DBContext.Employees select abc;//normal linq query
+            var result2 = from abc in _northwind_DBContext.Employees select abc;//normal linq query
             //Lamda expression Linq queryis below for fetching data from employee
             var result = _northwind_DBContext.Employees.ToList(); //Lamda expression query, Returns all employees data with all columns.
 
@@ -53,8 +55,8 @@ namespace LinqqueriesLearning.Controllers
             //SqlQuery:     //select * from  Employees where City='London'
             //LAMDA EXPRESSION USING LINQ query:        //ToList() method will fetch the all the data.
             var result = _northwind_DBContext.Employees.Where(ab => ab.City == "London").ToList();//=>we called lamda opertor
-                                                                                                //(parameters) => expression
-                                                                                                //here expression is a anoymous function.these functions we used in lamda expressions
+                                                                                                  //(parameters) => expression
+                                                                                                  //here expression is a anoymous function.these functions we used in lamda expressions
             var jsonSettings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             //It converts your data to jsonformat
             var convertedData = JsonConvert.SerializeObject(result);
@@ -100,8 +102,8 @@ namespace LinqqueriesLearning.Controllers
         public async Task<IActionResult> GetDataByNamesStartswiths()
         {//here we are fetchingall employess  data.
          //normal linq query:
-         var result2 = from s in _northwind_DBContext.Customers where s.ContactName.StartsWith("A") select s;
-         //lamda expression linq query like below.
+            var result2 = from s in _northwind_DBContext.Customers where s.ContactName.StartsWith("A") select s;
+            //lamda expression linq query like below.
             var result = _northwind_DBContext.Customers.Where(a => a.ContactName.StartsWith("A")).ToList();
             //SQLQUERY:select * from Customers where ContactName like 'A%'
             var jsonSettings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
@@ -161,7 +163,7 @@ namespace LinqqueriesLearning.Controllers
         {//Inprogress this example.you can apply pk,fk to employee and department table.
 
             //Sql Groupby Query:select   CompanyName as CompanyName,Count(*) as Count     from Customers group by CompanyName
-           //  var employees = _northwind_DBContext.Employees.Include(e => e.Department).Where(e => e.Department.Name == "HR").ToList();
+            //  var employees = _northwind_DBContext.Employees.Include(e => e.Department).Where(e => e.Department.Name == "HR").ToList();
             //Here you should use the primary key and Foreign key combination then only include will work
 
             var employees = _northwind_DBContext.Employees.Where(e => e.City == "London");
@@ -192,9 +194,9 @@ namespace LinqqueriesLearning.Controllers
                                     d => d.Deptid,     // Inner key selector
                                     (e, d) => new { FirstaName = e.FirstName, DepartmentName = d.Deptname })
                                     .ToList();//Tolist() will return all the data.
-                                             //sqlquery:select e.FirstName, e.LastName, e.City, d.DeptName from employee e
-                                             //join Departments d on d.Id=e.EmpId
-                                             //order by e.City desc
+                                              //sqlquery:select e.FirstName, e.LastName, e.City, d.DeptName from employee e
+                                              //join Departments d on d.Id=e.EmpId
+                                              //order by e.City desc
 
 
             //It converts your data to jsonformat
@@ -202,5 +204,92 @@ namespace LinqqueriesLearning.Controllers
             return StatusCode(StatusCodes.Status200OK, convertedData);
 
         }
+        [HttpGet]
+        [Route("FirstOrDefault()& First() method usage ")]
+        public async Task<IActionResult> FirstOrDefault_First_Usage(int deptid)
+        {
+            //chatgpturl:https://chatgpt.com/share/673e81cb-7f38-8010-b6e6-4779c0b0db3b
+            /*
+             * FirstOrDefault() will return data if record exist
+             * if data is not exist in database/datasource FirstOrDefault() will return null.
+             * ================================================
+             * First() method will return the data if record is exist
+             * if data is not exist in database/datasource First() will  throw error like InvalidOperationException.
+             * ErrorMessage is:System.InvalidOperationException: Sequence contains no elements.
+             ===========Note:Multiple Matching records are exist wit same id/name/your searching input  what will happen is?
+              *FirstOrDefault()method will not throw any error and it fetch the first matching element in the table (eventhough if you have more records).
+              *First()method will not throw any error and it fetch the first matching element in the table.
+
+            ====When exactly FirstOrDefault()& First() method usage is===============
+            *if  you want to   fetch/get  one  result exists in table then  go for this FirstOrDefault() method
+            *if  you want to   fetch/get  one  result exists in table then  go for this First() method will throw error.
+
+            *if record is not exist First() method will throw the error like InvalidOperationException
+            *if record is not exist FirstOrDefault() method will return null only.it is not throwing any error.
+
+
+             */
+            //Below Both Queries are same.you can you use any one of the query to fetchdata data based on filter  and return only one record.
+            var rm = await _northwind_DBContext.Departments.Where(e => e.Deptid == deptid).FirstOrDefaultAsync();
+
+            var rm1 = await _northwind_DBContext.Departments.FirstOrDefaultAsync(e => e.Deptid == deptid);
+            //==============================usage of First() method ============
+            try
+            {
+                var rm2 = await _northwind_DBContext.Departments.FirstAsync(e => e.Deptid == deptid);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            //It converts your data to jsonformat
+            var convertedData = JsonConvert.SerializeObject(rm);
+            return StatusCode(StatusCodes.Status200OK, convertedData);
+        }
+        [HttpGet]
+        [Route("SingleOrDefault()& Single() method usage ")]
+        public async Task<IActionResult> SingleOrDefault_Single_Usage(String Deptname)
+        {
+            /*
+              * SingleOrDefault() will return data if record exist
+              * if data is not exist in database/datasource SingleOrDefault() will return null.
+              * ================================================
+              * Single() method will return the data if record is exist
+              * if data is not exist in database/datasource Single() will  throw error like InvalidOperationException.
+              * ErrorMessage is:System.InvalidOperationException: Sequence contains no elements.
+            ===========Note:Multiple Matching records are exist wit same id/name/your searching input  what will happen is?
+              *SingleOrDefault()method will throw the error like InvalidOperationException.
+              *Single() method will throw the error like InvalidOperationException.
+
+            ====When exactly SingleOrDefault()& Single() method usage is===============
+            *if you have   exactly only one  result exists in table then only go for this singleordefault()
+            *Other wise if you have more than one record matching with your condition singleordefault()&Single() method also will throw error.
+            *if record is not exist single() method will throw the error like InvalidOperationException
+            *if record is not exist SingleOrDefault() method will return null only.it is not throwing any error.
+              */
+            //Below Both Queries are same.you can you use any one of the query to fetchdata data based on filter  and return only one record.
+            var rm = await _northwind_DBContext.Departments.Where(e => e.Deptname == Deptname).FirstOrDefaultAsync();
+
+            var rm1 = await _northwind_DBContext.Departments.FirstOrDefaultAsync(e => e.Deptname == Deptname);
+            //==============================usage of First() method ============
+            //The below query you can uncommentt and check the diffrence.
+            var rm2 = await _northwind_DBContext.Departments.FirstAsync(e => e.Deptname == Deptname);
+
+            //==================SingleOrDefault() and single() method usage============
+            //Below Both Queries are same.you can you use any one of the query to fetchdata data based on filter  and return only one record.
+            var rm3 = await _northwind_DBContext.Departments.Where(e => e.Deptname == Deptname).SingleOrDefaultAsync();
+
+            var rm4 = await _northwind_DBContext.Departments.SingleOrDefaultAsync(e => e.Deptname == Deptname);
+            //==============================usage of First() method ============
+
+            var rm5 = await _northwind_DBContext.Departments.SingleAsync(e => e.Deptname == Deptname);
+
+            //It converts your data to jsonformat
+            var convertedData = JsonConvert.SerializeObject(rm);
+            return StatusCode(StatusCodes.Status200OK, convertedData);
+
+        }
+
+       
     }
 }
